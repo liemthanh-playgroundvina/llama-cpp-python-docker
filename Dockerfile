@@ -14,10 +14,7 @@ WORKDIR /app
 COPY . .
 
 # Install depencencies
-RUN python3 -m pip install --upgrade pip pytest cmake scikit-build setuptools fastapi uvicorn sse-starlette pydantic-settings starlette-context
-
-# Install llama-cpp-python (build with cuda)
-RUN python3 -m pip install llama-cpp-python
+RUN python3 -m pip install --upgrade pip pytest cmake scikit-build setuptools fastapi uvicorn sse-starlette pydantic-settings starlette-context llama-cpp-python
 
 RUN make deps && make build && make clean
 
