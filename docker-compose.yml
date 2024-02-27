@@ -1,0 +1,22 @@
+# docker-compose -f docker-compose.yml build/up -d/down
+
+version: '3.7'
+
+services:
+  open-llm:
+    image: open-llm
+    container_name: app-open-llm
+    command:
+      ["python3", "-m", "llama_cpp.server", "--config_file", "config.json"]
+    volumes:
+      - .:/app
+      - ./llama_chat_format.py:/usr/local/lib/python3.9/site-packages/llama_cpp/llama_chat_format.py
+    ports:
+      - "9000:9000"
+    networks:
+      - open-llm-net
+
+networks:
+  open-llm-net:
+    name: open-llm-net
+    driver: bridge
