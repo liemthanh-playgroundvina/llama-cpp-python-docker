@@ -4,7 +4,8 @@ version: '3.7'
 
 services:
   open-llm:
-    image: open-llm
+#    image: open-llm
+    image: liemthanh/open-llm:latest
     container_name: app-open-llm
     command:
       ["python3", "-m", "llama_cpp.server", "--config_file", "config.json"]
