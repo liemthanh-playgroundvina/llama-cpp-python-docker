@@ -1,22 +1,22 @@
 ARG IMAGE=python:3.9-slim-bullseye
-FROM ${IMAGE}
-ARG IMAGE
+FROM ${IMAGE} as base
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
-    python3 \
-    python3-pip \
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
     ninja-build \
     libopenblas-dev \
-    build-essential
+    build-essential && \
+    # Clean up cache to reduce layer size
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY . .
+COPY . /app
 
-# Install depencencies
-RUN python3 -m pip install --upgrade pip pytest cmake scikit-build setuptools fastapi uvicorn sse-starlette pydantic-settings starlette-context llama-cpp-python
-
-RUN make deps && make build && make clean
+RUN python3 -m pip install --upgrade pip && \
+    pip install pytest cmake scikit-build setuptools fastapi uvicorn sse-starlette pydantic-settings starlette-context llama-cpp-python
 
 ## Choose and download model
 #RUN python3 -m pip install huggingface-hub==0.20.1
