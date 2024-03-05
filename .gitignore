@@ -1,2 +1,5 @@
 .idea
-/models/*.gguf
+/models/*
+!/models/.gitkeep
+/volume
+/endpoints

@@ -3,17 +3,58 @@
 version: '3.7'
 
 services:
-  open-llm:
-#    image: open-llm
-    image: liemthanh/open-llm:latest
+  # app
+  app:
+    image: liemthanh/endpoints-fastapi:latest
+    container_name: endpoints-fastapi
+    command:
+      [ "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8900",
+        #        "--reload"
+      ]
+    volumes:
+      - ./endpoints:/app
+    ports:
+      - "8558:8558"
+    restart: unless-stopped
+    networks:
+      - open-llm-net
+
+  open-llm-python:
+    image: liemthanh/open-llm-python:latest
     container_name: app-open-llm
     command:
       ["python3", "-m", "llama_cpp.server", "--config_file", "config.json"]
     volumes:
-      - .:/app
-      - ./llama_chat_format.py:/usr/local/lib/python3.9/site-packages/llama_cpp/llama_chat_format.py
+      - ./open-llm-python:/app
+      - ./models/GGUF:/models
+      - ./open-llm-python/llama_chat_format.py:/usr/local/lib/python3.9/site-packages/llama_cpp/llama_chat_format.py
     ports:
-      - "9000:9000"
+      - "8901:8901"
+    networks:
+      - open-llm-net
+
+#  # open-llm-cpp
+#  open-llm-cpp:
+#    image: liemthanh/open-llm-cpp:latest
+#    container_name: app-open-llm
+#    command:
+#      [ "./server", "--model", "/models/gemma-2b-it-q4_k_m.gguf", "--ctx-size", "2048", "--n-gpu-layers", "-1", "--host", "0.0.0.0", "--port", "8901" ]
+#    volumes:
+#      - ./models/GGUF:/models
+#    ports:
+#      - "8901:8901"
+#    networks:
+#      - open-llm-net
+
+  # text-embeddings-inference
+  text-embeddings-inference:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.1
+    container_name: text-embeddings-inference
+    command: --model-id BAAI/bge-m3
+    ports:
+      - "8902:80"
+    volumes:
+      - ./models/embed_models:/data
     networks:
       - open-llm-net
 
