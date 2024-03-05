@@ -1,5 +1,6 @@
 # Build and start
 build:
+	docker build -t endpoints-fastapi -f endpoints/Dockerfile endpoints
 	#docker build -t open-llm-python -f open-llm-python/Dockerfile open-llm-python
 	docker build -t open-llm-cpp -f open-llm-cpp/Dockerfile open-llm-cpp
 pull:
